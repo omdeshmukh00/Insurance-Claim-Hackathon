@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   ShieldCheck,
   FileCheck2,
@@ -86,81 +85,41 @@ export default function LandingAndDashboardPage() {
   };
 
   return (
-    <div className="space-y-12 pb-16">
+    <div className="space-y-8 pb-16">
       {/* ─────────────────────────────────────────────────────────────
-          1. HERO SECTION (With 'hero-section-img.png')
+          1. EXECUTIVE WORKSPACE HEADER
           ───────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#123d12] via-[#175117] to-[#0d2b0d] text-white p-8 md:p-12 lg:p-14 shadow-2xl border border-emerald-900/40">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Column: Headline, Copy, CTAs, Trust line */}
-          <div className="lg:col-span-6 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold tracking-wider uppercase">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>AI Insurance Claims Intelligence</span>
-            </div>
-
-            <div className="space-y-3">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.15]">
-                Smarter Claims. <br />
-                <span className="text-emerald-300">Clearer Decisions.</span>
-              </h1>
-              <p className="text-base sm:text-lg text-emerald-100/90 leading-relaxed max-w-xl">
-                Submit your claim, upload your documents, and let AI investigate the details — from policy coverage and missing information to inconsistencies and claim assessment — with every recommendation backed by evidence.
-              </p>
-            </div>
-
-            {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-3.5 pt-2">
-              <Link
-                href="/claims/new"
-                className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 shadow-lg hover:shadow-xl transition-all duration-150 transform hover:-translate-y-0.5"
-              >
-                <span>Start a Claim</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/policies"
-                className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-semibold text-sm bg-white/10 hover:bg-white/15 text-white border border-white/20 backdrop-blur-xs transition-all duration-150"
-              >
-                <FileCheck2 className="h-4 w-4 text-emerald-300" />
-                <span>View My Policies</span>
-              </Link>
-            </div>
-
-            {/* Trust Line */}
-            <div className="pt-2 flex items-center gap-2 text-xs font-medium text-emerald-200/80">
-              <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
-              <span>Evidence-backed AI analysis • Human review when needed</span>
-            </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
+        <div>
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-semibold mb-2">
+            <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
+            <span>InsuredYou Claims Intelligence</span>
           </div>
-
-          {/* Right Column: hero-section-img visual integration */}
-          <div className="lg:col-span-6 relative">
-            <div className="relative mx-auto rounded-2xl overflow-hidden shadow-2xl border border-emerald-400/25 bg-black/40 group">
-              <div className="relative w-full h-[260px] sm:h-[320px] md:h-[380px]">
-                <Image
-                  src="/hero-section-img.png"
-                  alt="InsuredYou Claims Intelligence Visual"
-                  fill
-                  priority
-                  className="object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-
-              {/* Overlay Glass Badges */}
-              <div className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950/80 backdrop-blur-md border border-white/10 text-white text-xs font-semibold shadow-lg">
-                <Cpu className="h-3.5 w-3.5 text-emerald-400" />
-                <span>6 Specialized AI Agents</span>
-              </div>
-
-              <div className="absolute bottom-4 right-4 flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-950/85 backdrop-blur-md border border-emerald-400/30 text-emerald-200 text-xs font-semibold shadow-lg">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                <span>100% Grounded Evidence</span>
-              </div>
-            </div>
-          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+            Claims Intelligence Workspace
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Evidence-backed insurance analysis, autonomous multi-agent investigation, and grounded policy adjudication.
+          </p>
         </div>
-      </section>
+
+        <div className="flex items-center gap-3 shrink-0">
+          <Link
+            href="/policies/upload"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 hover:border-emerald-600 bg-white text-xs font-semibold text-slate-700 hover:text-emerald-800 transition-colors shadow-xs"
+          >
+            <FileCheck2 className="h-4 w-4 text-emerald-600" />
+            <span>Add Existing Policy</span>
+          </Link>
+          <Link
+            href="/claims/new"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold text-xs shadow-sm transition-all"
+          >
+            <span>Start a Claim</span>
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </div>
 
       {/* ─────────────────────────────────────────────────────────────
           2. LIVE DASHBOARD METRICS BAR (Real Backend Values)
