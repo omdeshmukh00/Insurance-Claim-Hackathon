@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AppLayout } from "@/components/layout";
+import { AuthProvider } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: {
@@ -12,16 +12,19 @@ export const metadata: Metadata = {
   keywords: ["insurance", "claims", "AI", "fraud detection", "adjusters"],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <head>
-        {/* Preconnect for Google Fonts used in globals.css */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       </head>
-      <body>
-        <AppLayout>{children}</AppLayout>
+      <body className="antialiased min-h-screen" style={{ backgroundColor: "var(--bg-page)" }}>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

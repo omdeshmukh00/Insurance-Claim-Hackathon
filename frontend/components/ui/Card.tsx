@@ -98,30 +98,57 @@ export function CardFooter({ className, children, ...props }: React.HTMLAttribut
 
 /* ── Stat Card ── */
 export interface StatCardProps {
-  label: string;
+  label?: string;
+  title?: string;
+  subtitle?: string;
   value: string | number;
   delta?: string;
   deltaType?: "positive" | "negative" | "neutral";
-  icon?: React.ReactNode;
+  icon?: React.ReactNode | React.ComponentType<{ className?: string }>;
+  accentColor?: string;
   className?: string;
 }
-export function StatCard({ label, value, delta, deltaType = "neutral", icon, className }: StatCardProps) {
+export function StatCard({
+  label,
+  title,
+  subtitle,
+  value,
+  delta,
+  deltaType = "neutral",
+  icon,
+  accentColor,
+  className,
+}: StatCardProps) {
+  const displayTitle = title || label || "";
   const deltaColors = {
     positive: "text-[var(--color-success)] bg-[var(--color-success-light)]",
     negative: "text-[var(--color-error)]   bg-[var(--color-error-light)]",
     neutral:  "text-[var(--text-tertiary)]  bg-[var(--bg-subtle)]",
   };
+
+  const renderIcon = () => {
+    if (!icon) return null;
+    if (React.isValidElement(icon)) return icon;
+    const IconComp = icon as React.ComponentType<{ className?: string }>;
+    return <IconComp className="h-5 w-5" />;
+  };
+
   return (
     <Card className={cn("overflow-hidden", className)}>
-      <CardContent className="py-5">
+      <CardContent className="py-4 sm:py-5">
         <div className="flex items-start justify-between gap-3">
-          <div className="space-y-1">
-            <p className="text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-widest">
-              {label}
+          <div className="space-y-1 min-w-0">
+            <p className="text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider truncate">
+              {displayTitle}
             </p>
-            <p className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">
+            <p className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] tracking-tight">
               {value}
             </p>
+            {subtitle && (
+              <p className="text-[10px] text-[var(--text-muted)] truncate">
+                {subtitle}
+              </p>
+            )}
             {delta && (
               <span className={cn("inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium", deltaColors[deltaType])}>
                 {delta}
@@ -129,8 +156,11 @@ export function StatCard({ label, value, delta, deltaType = "neutral", icon, cla
             )}
           </div>
           {icon && (
-            <div className="shrink-0 p-2.5 rounded-[var(--radius-lg)] bg-[var(--green-50)] text-[var(--green-600)]">
-              {icon}
+            <div
+              className="shrink-0 p-2 sm:p-2.5 rounded-[var(--radius-lg)] bg-[var(--bg-subtle)] text-[var(--green-700)]"
+              style={accentColor ? { color: accentColor } : undefined}
+            >
+              {renderIcon()}
             </div>
           )}
         </div>
