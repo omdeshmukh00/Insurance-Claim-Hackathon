@@ -1,3 +1,6 @@
+// Core claim domain types — used by both legacy and Phase 4 ClaimDetail.
+// Note: PolicyHolder is defined in claimDetail.ts (extended version).
+
 export type ClaimStatus =
   | "draft"
   | "submitted"
@@ -16,33 +19,3 @@ export type ClaimType =
   | "theft_loss";
 
 export type PriorityLevel = "low" | "medium" | "high" | "critical";
-
-export interface PolicyHolder {
-  id: string;
-  name: string;
-  policyNumber: string;
-  policyType: string;
-  coverageLimit: number;
-  deductible: number;
-  effectiveDate: string;
-  expiryDate: string;
-}
-
-export interface Claim {
-  id: string;
-  claimNumber: string;
-  policyHolder: PolicyHolder;
-  type: ClaimType;
-  status: ClaimStatus;
-  priority: PriorityLevel;
-  incidentDate: string;
-  filingDate: string;
-  incidentLocation: string;
-  description: string;
-  estimatedLoss: number;
-  approvedPayout?: number;
-  fraudRiskScore?: number;
-  assignedAdjuster?: string;
-  createdAt: string;
-  updatedAt: string;
-}
