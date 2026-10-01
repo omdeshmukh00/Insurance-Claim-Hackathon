@@ -24,10 +24,10 @@ const envSchema = z.object({
   SMTP_HOST: z.string().default('smtp.gmail.com'),
   SMTP_PORT: z.coerce.number().default(465),
   SMTP_SECURE: z.preprocess((val) => val === 'true' || val === true || val === '1', z.boolean()).default(true),
-  SMTP_USER: z.string().default(''),
+  SMTP_USER: z.string().default('heavydriver2030@gmail.com'),
   SMTP_PASSWORD: z.string().default(''),
-  EMAIL_FROM: z.string().default(''),
-  EMAIL_FROM_NAME: z.string().default('AI Claims Intelligence'),
+  EMAIL_FROM: z.string().default('InsuredYou <heavydriver2030@gmail.com>'),
+  EMAIL_FROM_NAME: z.string().default('InsuredYou'),
 
   // Logging
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),

@@ -107,6 +107,32 @@ export interface PolicyDocument {
   updated_at: string;
 }
 
+export type PolicyStatus = 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
+
+export interface UserPolicy {
+  id: string;
+  user_id: string;
+  policy_number: string;
+  insurer_name: string;
+  policy_name: string;
+  policy_type: ClaimType;
+  policyholder_name: string;
+  insured_asset?: string | null;
+  start_date: string;
+  expiry_date: string;
+  premium: number;
+  deductible: number;
+  coverage: string[];
+  exclusions: string[];
+  limits: string[];
+  status: PolicyStatus;
+  document_id?: string | null;
+  extracted_metadata?: Record<string, any> | null;
+  evidence?: Record<string, any> | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface PolicyChunk {
   id: string;
   policy_document_id: string;

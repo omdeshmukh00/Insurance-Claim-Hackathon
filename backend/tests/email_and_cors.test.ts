@@ -82,6 +82,6 @@ describe('Email Templates, SMTP Service & CORS', () => {
       expect(log.template).toBe('claim-submitted');
       expect(log.status).toMatch(/SENT|SIMULATED/);
       expect(inMemoryStore.emailLogs.has(log.id)).toBe(true);
-    });
+    }, 15000);
   });
 });

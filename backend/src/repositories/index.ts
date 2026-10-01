@@ -16,6 +16,7 @@ import {
   Settlement,
   ClaimEvent,
   AuditLog,
+  UserPolicy,
 } from '../types/database.js';
 
 // ============================================================
@@ -63,6 +64,24 @@ export const profileRepository = {
     }
     inMemoryStore.profiles.set(profile.id, profile);
     return profile;
+  },
+
+  async update(id: string, updates: Partial<Profile>): Promise<Profile | null> {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await getSupabaseAdmin()
+        .from('profiles')
+        .update({ ...updates, updated_at: new Date().toISOString() })
+        .eq('id', id)
+        .select()
+        .single();
+      if (error || !data) return null;
+      return data as Profile;
+    }
+    const existing = inMemoryStore.profiles.get(id);
+    if (!existing) return null;
+    const updated: Profile = { ...existing, ...updates, updated_at: new Date().toISOString() };
+    inMemoryStore.profiles.set(id, updated);
+    return updated;
   },
 };
 
@@ -784,3 +803,111 @@ export const auditRepository = {
     );
   },
 };
+
+// ============================================================
+// USER POLICY REPOSITORY
+// ============================================================
+export const userPolicyRepository = {
+  async create(policyInput: Omit<UserPolicy, 'id' | 'created_at' | 'updated_at'>): Promise<UserPolicy> {
+    const now = new Date().toISOString();
+    const id = randomUUID();
+    const policy: UserPolicy = {
+      ...policyInput,
+      id,
+      created_at: now,
+      updated_at: now,
+    };
+
+    if (isSupabaseConfigured()) {
+      const { data, error } = await getSupabaseAdmin()
+        .from('user_policies')
+        .insert(policy)
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      return data as UserPolicy;
+    }
+
+    inMemoryStore.userPolicies.set(id, policy);
+    return policy;
+  },
+
+  async findById(id: string): Promise<UserPolicy | null> {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await getSupabaseAdmin()
+        .from('user_policies')
+        .select('*')
+        .eq('id', id)
+        .single();
+      if (error || !data) return null;
+      return data as UserPolicy;
+    }
+    return inMemoryStore.userPolicies.get(id) || null;
+  },
+
+  async findByUserId(userId: string): Promise<UserPolicy[]> {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await getSupabaseAdmin()
+        .from('user_policies')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      if (error) throw new Error(error.message);
+      return (data || []) as UserPolicy[];
+    }
+    return Array.from(inMemoryStore.userPolicies.values())
+      .filter((p) => p.user_id === userId)
+      .sort((a, b) => b.created_at.localeCompare(a.created_at));
+  },
+
+  async findByPolicyNumber(policyNumber: string): Promise<UserPolicy | null> {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await getSupabaseAdmin()
+        .from('user_policies')
+        .select('*')
+        .eq('policy_number', policyNumber)
+        .single();
+      if (error || !data) return null;
+      return data as UserPolicy;
+    }
+    for (const p of inMemoryStore.userPolicies.values()) {
+      if (p.policy_number.toLowerCase() === policyNumber.toLowerCase()) return p;
+    }
+    return null;
+  },
+
+  async findAll(): Promise<UserPolicy[]> {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await getSupabaseAdmin()
+        .from('user_policies')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw new Error(error.message);
+      return (data || []) as UserPolicy[];
+    }
+    return Array.from(inMemoryStore.userPolicies.values()).sort((a, b) =>
+      b.created_at.localeCompare(a.created_at)
+    );
+  },
+
+  async update(id: string, updates: Partial<UserPolicy>): Promise<UserPolicy | null> {
+    const now = new Date().toISOString();
+    if (isSupabaseConfigured()) {
+      const { data, error } = await getSupabaseAdmin()
+        .from('user_policies')
+        .update({ ...updates, updated_at: now })
+        .eq('id', id)
+        .select()
+        .single();
+      if (error || !data) return null;
+      return data as UserPolicy;
+    }
+
+    const existing = inMemoryStore.userPolicies.get(id);
+    if (!existing) return null;
+    const updated: UserPolicy = { ...existing, ...updates, updated_at: now };
+    inMemoryStore.userPolicies.set(id, updated);
+    return updated;
+  },
+};
+

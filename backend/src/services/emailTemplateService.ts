@@ -6,6 +6,9 @@ export interface EmailTemplateData {
   currency?: string;
   status?: string;
   reason?: string;
+  policyNumber?: string;
+  insurerName?: string;
+  policyType?: string;
   missingItems?: string[];
   reviewNotes?: string[];
   actionUrl?: string;
@@ -24,37 +27,37 @@ export const emailTemplateService = {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${title}</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 0; color: #2d3748; }
-    .container { max-width: 600px; margin: 30px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-    .header { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: #ffffff; padding: 28px 24px; text-align: center; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f6f8f7; margin: 0; padding: 0; color: #1f2937; }
+    .container { max-width: 600px; margin: 30px auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px -2px rgba(6, 78, 59, 0.08); border: 1px solid #e5e7eb; }
+    .header { background: linear-gradient(135deg, #064e3b 0%, #059669 100%); color: #ffffff; padding: 28px 24px; text-align: center; }
     .header h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
     .header p { margin: 6px 0 0 0; font-size: 14px; opacity: 0.9; }
     .content { padding: 32px 28px; line-height: 1.6; }
     .badge { display: inline-block; padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .badge-submitted { background: #dbeafe; color: #1e40af; }
+    .badge-submitted { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
     .badge-approved { background: #dcfce7; color: #15803d; }
-    .badge-settled { background: #e0e7ff; color: #4338ca; }
-    .badge-review { background: #fef3c7; color: #b45309; }
+    .badge-settled { background: #fef3c7; color: #92400e; }
+    .badge-review { background: #fff7ed; color: #c2410c; }
     .badge-rejected { background: #fee2e2; color: #b91c1c; }
-    .meta-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px 20px; margin: 20px 0; }
+    .meta-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px 20px; margin: 20px 0; }
     .meta-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
-    .meta-label { color: #64748b; font-weight: 500; }
-    .meta-value { color: #0f172a; font-weight: 600; }
-    .footer { background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; }
+    .meta-label { color: #6b7280; font-weight: 500; }
+    .meta-value { color: #111827; font-weight: 600; }
+    .footer { background: #f9fafb; border-top: 1px solid #e5e7eb; padding: 20px; text-align: center; font-size: 12px; color: #6b7280; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>Insurance Claims Intelligence</h1>
-      <p>Automated & Evidence-Backed Claims Processing</p>
+      <h1>InsuredYou</h1>
+      <p>AI Insurance Claims Intelligence</p>
     </div>
     <div class="content">
       ${bodyContent}
     </div>
     <div class="footer">
-      <p>This is an automated notification from the Claims Intelligence System.</p>
-      <p>&copy; ${new Date().getFullYear()} Claims Intelligence Inc. All rights reserved.</p>
+      <p>This is an automated notification from InsuredYou Claims Intelligence.</p>
+      <p>&copy; ${new Date().getFullYear()} InsuredYou. All rights reserved.</p>
     </div>
   </div>
 </body>
@@ -63,13 +66,13 @@ export const emailTemplateService = {
     switch (templateName) {
       case 'claim-submitted':
         return {
-          subject: `Claim Received: ${claimNumber}`,
+          subject: `Claim Received: ${claimNumber} - InsuredYou`,
           text: `Your claim ${claimNumber} has been received and is queued for verification.`,
           html: wrapLayout(
             'Claim Received',
             `<h2>Claim Submission Confirmed</h2>
             <p>Hello ${data.recipientName || 'Valued Policyholder'},</p>
-            <p>Your claim has been successfully registered in our claims intelligence platform.</p>
+            <p>Your claim has been successfully registered in the InsuredYou claims intelligence platform.</p>
             <div class="meta-card">
               <div class="meta-row"><span class="meta-label">Claim Number:</span><span class="meta-value">${claimNumber}</span></div>
               <div class="meta-row"><span class="meta-label">Title:</span><span class="meta-value">${data.claimTitle || 'N/A'}</span></div>
@@ -80,19 +83,21 @@ export const emailTemplateService = {
           ),
         };
 
-      case 'investigation-complete':
+      case 'policy-analysed':
         return {
-          subject: `Investigation Completed: ${claimNumber}`,
-          text: `AI investigation has concluded for claim ${claimNumber}.`,
+          subject: `Policy Analysed: ${data.policyNumber || 'Your Policy'} - InsuredYou`,
+          text: `Your insurance policy document has been successfully analysed by InsuredYou AI.`,
           html: wrapLayout(
-            'Investigation Completed',
-            `<h2>Claim Investigation Concluded</h2>
-            <p>The multi-agent intelligence analysis for claim <strong>${claimNumber}</strong> is complete.</p>
+            'Policy Analysed',
+            `<h2>Policy Analysis Complete</h2>
+            <p>Hello ${data.recipientName || 'Valued Policyholder'},</p>
+            <p>Your uploaded insurance policy has been processed and indexed for autonomous claims assistance.</p>
             <div class="meta-card">
-              <div class="meta-row"><span class="meta-label">Claim:</span><span class="meta-value">${claimNumber}</span></div>
-              <div class="meta-row"><span class="meta-label">Status:</span><span class="meta-value">${data.status || 'PROCESSED'}</span></div>
+              <div class="meta-row"><span class="meta-label">Policy Number:</span><span class="meta-value">${data.policyNumber || 'N/A'}</span></div>
+              <div class="meta-row"><span class="meta-label">Insurer:</span><span class="meta-value">${data.insurerName || 'N/A'}</span></div>
+              <div class="meta-row"><span class="meta-label">Policy Type:</span><span class="meta-value">${data.policyType || 'General'}</span></div>
             </div>
-            <p>${data.reason || 'All supporting policy documents and evidence have been correlated.'}</p>`
+            <p>You can now ask questions about your policy coverage and file instant evidence-grounded claims.</p>`
           ),
         };
 
@@ -107,7 +112,7 @@ export const emailTemplateService = {
             <ul>
               ${(data.missingItems || ['Additional proof of loss or invoice']).map((item) => `<li><strong>${item}</strong></li>`).join('')}
             </ul>
-            <p>Please log in to your claims portal to upload the requested documents.</p>`
+            <p>Please log in to your InsuredYou portal to upload the requested documents.</p>`
           ),
         };
 
@@ -117,7 +122,7 @@ export const emailTemplateService = {
           text: `Claim ${claimNumber} requires review by a claims officer.`,
           html: wrapLayout(
             'Human Review Required',
-            `<h2>Claim Assigned for Staff Assessment</h2>
+            `<h2>Claim Assigned for Specialist Review</h2>
             <p>Claim <strong>${claimNumber}</strong> has been flagged for human review by our intelligence engine.</p>
             <p>Reason: ${data.reason || 'Complex claim conditions or inconsistency detected'}</p>
             <p>A claims specialist has been assigned to inspect the evidence package.</p>`
@@ -126,7 +131,7 @@ export const emailTemplateService = {
 
       case 'claim-approved':
         return {
-          subject: `Claim Approved: ${claimNumber}`,
+          subject: `Claim Approved: ${claimNumber} - InsuredYou`,
           text: `Good news! Your claim ${claimNumber} has been approved.`,
           html: wrapLayout(
             'Claim Approved',
@@ -142,7 +147,7 @@ export const emailTemplateService = {
 
       case 'claim-settled':
         return {
-          subject: `Claim Settled & Disbursed: ${claimNumber}`,
+          subject: `Claim Settled & Disbursed: ${claimNumber} - InsuredYou`,
           text: `Settlement for claim ${claimNumber} has been finalized.`,
           html: wrapLayout(
             'Claim Settled',
@@ -157,7 +162,7 @@ export const emailTemplateService = {
 
       case 'claim-rejected':
         return {
-          subject: `Decision Notice: Claim ${claimNumber}`,
+          subject: `Decision Notice: Claim ${claimNumber} - InsuredYou`,
           text: `Claim ${claimNumber} has not been approved.`,
           html: wrapLayout(
             'Decision Notice',
@@ -170,7 +175,7 @@ export const emailTemplateService = {
 
       default:
         return {
-          subject: `Notification regarding Claim ${claimNumber}`,
+          subject: `Notification regarding Claim ${claimNumber} - InsuredYou`,
           text: `Status update regarding claim ${claimNumber}`,
           html: wrapLayout('Claim Update', `<p>Status update regarding claim ${claimNumber}</p>`),
         };

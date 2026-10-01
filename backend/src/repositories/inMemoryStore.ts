@@ -14,11 +14,13 @@ import {
   ClaimEvent,
   EmailLog,
   AuditLog,
+  UserPolicy,
 } from '../types/database.js';
 
 export class InMemoryStore {
   public profiles: Map<string, Profile> = new Map();
   public claims: Map<string, Claim> = new Map();
+  public userPolicies: Map<string, UserPolicy> = new Map();
   public claimDocuments: Map<string, ClaimDocument> = new Map();
   public policyDocuments: Map<string, PolicyDocument> = new Map();
   public policyChunks: Map<string, PolicyChunk> = new Map();
@@ -40,6 +42,7 @@ export class InMemoryStore {
   public clear(): void {
     this.profiles.clear();
     this.claims.clear();
+    this.userPolicies.clear();
     this.claimDocuments.clear();
     this.policyDocuments.clear();
     this.policyChunks.clear();
@@ -139,6 +142,76 @@ export class InMemoryStore {
     };
     this.policyChunks.set(chunk1.id, chunk1);
     this.policyChunks.set(chunk2.id, chunk2);
+
+    // Seed default user policies
+    const userPolicy1: UserPolicy = {
+      id: '55555555-5555-5555-5555-555555555551',
+      user_id: '11111111-0000-0000-0000-000000000001', // Alice Claimant
+      policy_number: 'POL-AUTO-2026-001',
+      insurer_name: 'InsuredYou Mutual',
+      policy_name: 'Comprehensive Motorist Shield',
+      policy_type: 'AUTO',
+      policyholder_name: 'Alice Claimant',
+      insured_asset: '2023 Tesla Model 3 (VIN: 5YJ3E1EB9PF123456)',
+      start_date: '2026-01-01',
+      expiry_date: '2026-12-31',
+      premium: 1850.0,
+      deductible: 500.0,
+      coverage: [
+        'Collision Damage up to $50,000',
+        'Comprehensive Fire & Theft',
+        'Uninsured Motorist Protection',
+        '24/7 Roadside Assistance',
+      ],
+      exclusions: [
+        'Intentional damage or racing',
+        'Normal wear and tear',
+        'Hit-and-run without police report within 48h',
+      ],
+      limits: [
+        'Vehicle Actual Cash Value max $50,000',
+        'Medical Payments $10,000 per person',
+      ],
+      status: 'ACTIVE',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    const userPolicy2: UserPolicy = {
+      id: '55555555-5555-5555-5555-555555555552',
+      user_id: '11111111-0000-0000-0000-000000000001', // Alice Claimant
+      policy_number: 'POL-PROP-2026-002',
+      insurer_name: 'InsuredYou Home Guard',
+      policy_name: 'Homeowners Dwelling & Asset Protection',
+      policy_type: 'PROPERTY',
+      policyholder_name: 'Alice Claimant',
+      insured_asset: 'Residential Property — 742 Evergreen Terrace',
+      start_date: '2026-01-01',
+      expiry_date: '2026-12-31',
+      premium: 2400.0,
+      deductible: 1000.0,
+      coverage: [
+        'Dwelling structural damage up to $500,000',
+        'Personal property contents up to $100,000',
+        'Sudden plumbing discharge',
+      ],
+      exclusions: [
+        'Flooding and storm surge (requires endorsement)',
+        'Gradual seepage exceeding 14 days',
+        'Earthquake damage',
+      ],
+      limits: [
+        'Dwelling: $500,000',
+        'Personal property: $100,000',
+        'Loss of use: $50,000',
+      ],
+      status: 'ACTIVE',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    this.userPolicies.set(userPolicy1.id, userPolicy1);
+    this.userPolicies.set(userPolicy2.id, userPolicy2);
   }
 }
 

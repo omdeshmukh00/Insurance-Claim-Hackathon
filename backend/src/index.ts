@@ -4,6 +4,10 @@ import { corsMiddleware } from './config/cors.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import claimRoutes from './api/claimRoutes.js';
+import policyRoutes from './api/policyRoutes.js';
+import assistantRoutes from './api/assistantRoutes.js';
+import adminRoutes from './api/adminRoutes.js';
+import authRoutes from './api/authRoutes.js';
 import { auditController } from './api/auditController.js';
 import { requireAuth, requireRole } from './middleware/auth.js';
 import { NotFoundError } from './utils/errors.js';
@@ -22,20 +26,29 @@ app.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({
     status: 'ok',
     service: 'insurance-claims-ai-backend',
+    brand: 'InsuredYou',
     timestamp: new Date().toISOString(),
   });
 });
 
 app.get('/api/status', (_req: Request, res: Response) => {
   res.status(200).json({
-    name: 'AI Insurance Claims Intelligence Backend API',
-    version: '0.1.0',
+    name: 'InsuredYou - AI Insurance Claims Intelligence Backend API',
+    version: '1.0.0',
     modules: [
       'claims-assessment',
       'ai-agents',
       'agent-orchestration',
       'rag-engine',
-      'document-processing',
+      'policy-document-agent',
+      'policy-rag-agent',
+      'claim-document-agent',
+      'coverage-agent',
+      'anomaly-agent',
+      'missing-information-agent',
+      'claim-assessment-agent',
+      'settlement-recommendation-agent',
+      'user-assistant-agent',
       'human-review',
       'evidence-graph',
       'settlement-engine',
@@ -44,8 +57,12 @@ app.get('/api/status', (_req: Request, res: Response) => {
   });
 });
 
-// Claims API routes
+// Mounted API Routes
+app.use(`${config.API_PREFIX}/auth`, authRoutes);
+app.use(`${config.API_PREFIX}/policies`, policyRoutes);
 app.use(`${config.API_PREFIX}/claims`, claimRoutes);
+app.use(`${config.API_PREFIX}/assistant`, assistantRoutes);
+app.use(`${config.API_PREFIX}/admin`, adminRoutes);
 
 // Admin-only global audit logs
 app.get(
