@@ -99,20 +99,20 @@ export default function PolicyUploadPage() {
       const analysis = result.analysis;
 
       setExtractedData({
-        policy_number: analysis.policy_number || "POL-" + Math.floor(100000 + Math.random() * 900000),
-        insurer_name: analysis.insurer_name || "Assurance Mutual",
-        policy_name: analysis.policy_name || "Comprehensive Policy",
+        policy_number: analysis.policy_number || "",
+        insurer_name: analysis.insurer_name || "",
+        policy_name: analysis.policy_name || "Motor Insurance Policy",
         policy_type: (analysis.policy_type as any) || "AUTO",
-        policyholder_name: analysis.policyholder_name || "Policyholder",
+        policyholder_name: analysis.policyholder_name || "",
         insured_asset: analysis.insured_asset || "",
         start_date: analysis.start_date || "2026-01-01",
         expiry_date: analysis.expiry_date || "2026-12-31",
-        premium: Number(analysis.premium || 1200),
-        deductible: Number(analysis.deductible || 500),
-        coverage: analysis.covered_events || ["Collision and Comprehensive", "Liability Coverage"],
-        limits: analysis.coverage_limits || ["$100,000 Property Damage", "$300,000 Bodily Injury"],
-        exclusions: analysis.exclusions || ["Intentional acts", "Mechanical breakdown"],
-        extracted_evidence: analysis.extracted_evidence || [],
+        premium: analysis.premium !== undefined ? Number(analysis.premium) : 0,
+        deductible: analysis.deductible !== undefined ? Number(analysis.deductible) : 0,
+        coverage: Array.isArray(analysis.covered_events) && analysis.covered_events.length > 0 ? analysis.covered_events : [],
+        limits: Array.isArray(analysis.coverage_limits) && analysis.coverage_limits.length > 0 ? analysis.coverage_limits : [],
+        exclusions: Array.isArray(analysis.exclusions) && analysis.exclusions.length > 0 ? analysis.exclusions : [],
+        extracted_evidence: Array.isArray(analysis.extracted_evidence) ? analysis.extracted_evidence : [],
       });
 
       setStep("REVIEW");
@@ -431,7 +431,7 @@ export default function PolicyUploadPage() {
               {/* Premium */}
               <div>
                 <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">
-                  Premium ($)
+                  Premium Amount
                 </label>
                 <input
                   type="number"
@@ -446,7 +446,7 @@ export default function PolicyUploadPage() {
               {/* Deductible */}
               <div>
                 <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">
-                  Deductible ($)
+                  Deductible Amount
                 </label>
                 <input
                   type="number"

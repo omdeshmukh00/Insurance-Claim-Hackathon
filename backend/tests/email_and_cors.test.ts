@@ -1,9 +1,14 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import request from 'supertest';
 import { app } from '../src/index.js';
 import { emailTemplateService } from '../src/services/emailTemplateService.js';
 import { emailService } from '../src/services/emailService.js';
 import { inMemoryStore } from '../src/repositories/inMemoryStore.js';
+import nodemailer from 'nodemailer';
+
+vi.spyOn(nodemailer, 'createTransport').mockReturnValue({
+  sendMail: vi.fn().mockResolvedValue({ messageId: 'mock-msg-12345' }),
+} as any);
 
 describe('Email Templates, SMTP Service & CORS', () => {
   beforeEach(() => {

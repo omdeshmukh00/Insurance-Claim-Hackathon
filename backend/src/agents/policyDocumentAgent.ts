@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { geminiService } from '../services/geminiService.js';
 import { logger } from '../utils/logger.js';
 import { ClaimType } from '../types/database.js';
+import { extractTextFromDocument } from '../document-processing/textExtractor.js';
+import { extractPolicyDetailsFromText } from '../document-processing/ruleBasedPolicyExtractor.js';
 
 export const policyExtractionSchema = z.object({
   insurer_name: z.string().default('InsuredYou Mutual'),
@@ -39,6 +41,17 @@ export const policyDocumentAgent = {
   ): Promise<PolicyExtractionResult> {
     logger.info(`PolicyDocumentAgent analyzing document: ${fileName} (${mimeType})`);
 
+    // 1. Extract raw text from the uploaded document first
+    let docText = '';
+    try {
+      const extractedDoc = await extractTextFromDocument(fileBuffer, mimeType, fileName);
+      docText = extractedDoc.text || '';
+      logger.info(`Extracted document text length: ${docText.length} characters`);
+    } catch (err: any) {
+      logger.warn(`Document text extraction note: ${err.message}`);
+    }
+
+    // 2. Try Gemini Multimodal / Structured Analysis if configured
     if (geminiService.isConfigured()) {
       try {
         const prompt = `You are a specialized Insurance Policy Extraction AI Agent.
@@ -70,10 +83,23 @@ Crucial: Do not invent clauses or numbers. Provide exact source quotes for every
           { temperature: 0.1 }
         );
 
-        return result;
+        // If Gemini returned a valid result with real policy number, use it
+        if (result && result.policy_number) {
+          logger.info(`Gemini successfully extracted policy: ${result.policy_number}`);
+          return result;
+        }
       } catch (err: any) {
-        logger.warn(`Gemini policy extraction fallback used: ${err.message}`);
-        return this.createFallbackExtraction(fileName);
+        logger.warn(`Gemini policy extraction failed or quota exceeded (${err.message}). Using intelligent rule-based document text extraction.`);
+      }
+    }
+
+    // 3. Intelligent Rule-Based Extraction on real document text
+    if (docText && docText.trim().length > 30) {
+      try {
+        const parsed = extractPolicyDetailsFromText(docText, fileName);
+        return parsed;
+      } catch (err: any) {
+        logger.warn(`Rule-based text extraction error: ${err.message}`);
       }
     }
 
