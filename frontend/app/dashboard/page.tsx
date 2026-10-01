@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 
-export default function HomePage() {
+export default function LegacyDashboardRedirect() {
   const { user, role, isLoading } = useAuth();
   const router = useRouter();
 
@@ -21,16 +21,8 @@ export default function HomePage() {
   }, [user, role, isLoading, router]);
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center"
-      style={{ backgroundColor: "var(--bg-page)" }}
-    >
-      <div className="flex flex-col items-center gap-3">
-        <div className="h-6 w-6 rounded-full border-2 border-[var(--green-600)] border-t-transparent animate-spin" />
-        <p className="text-xs text-[var(--text-secondary)] font-medium">
-          Loading Claims Intelligence…
-        </p>
-      </div>
+    <div className="py-20 flex items-center justify-center">
+      <div className="h-6 w-6 rounded-full border-2 border-[var(--green-600)] border-t-transparent animate-spin" />
     </div>
   );
 }

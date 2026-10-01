@@ -4,14 +4,16 @@ import { Button, ButtonProps } from "./Button";
 
 /* ── EmptyState ── */
 export interface EmptyStateProps {
-  icon?: React.ReactNode;
+  icon?: React.ReactNode | React.ComponentType<{ className?: string }>;
   title: string;
   description?: string;
-  action?: {
-    label: string;
-    onClick: () => void;
-    variant?: ButtonProps["variant"];
-  };
+  action?:
+    | {
+        label: string;
+        onClick: () => void;
+        variant?: ButtonProps["variant"];
+      }
+    | React.ReactNode;
   secondaryAction?: {
     label: string;
     onClick: () => void;
@@ -26,11 +28,37 @@ export function EmptyState({
   secondaryAction,
   className,
 }: EmptyStateProps) {
+  const renderIcon = () => {
+    if (!icon) return null;
+    if (React.isValidElement(icon)) return icon;
+    const IconComp = icon as React.ComponentType<{ className?: string }>;
+    return <IconComp className="h-8 w-8" />;
+  };
+
+  const renderAction = () => {
+    if (!action) return null;
+    if (React.isValidElement(action)) return action;
+    const actionObj = action as {
+      label: string;
+      onClick: () => void;
+      variant?: ButtonProps["variant"];
+    };
+    return (
+      <Button
+        variant={actionObj.variant ?? "primary"}
+        size="sm"
+        onClick={actionObj.onClick}
+      >
+        {actionObj.label}
+      </Button>
+    );
+  };
+
   return (
     <div className={cn("flex flex-col items-center justify-center text-center py-16 px-6", className)}>
       {icon && (
         <div className="mb-4 p-4 rounded-[var(--radius-2xl)] bg-[var(--bg-subtle)] text-[var(--text-muted)]">
-          <div className="[&>svg]:h-8 [&>svg]:w-8">{icon}</div>
+          <div className="[&>svg]:h-8 [&>svg]:w-8">{renderIcon()}</div>
         </div>
       )}
       <h3 className="text-base font-semibold text-[var(--text-primary)] mt-1">{title}</h3>
@@ -46,11 +74,7 @@ export function EmptyState({
               {secondaryAction.label}
             </Button>
           )}
-          {action && (
-            <Button variant={action.variant ?? "primary"} size="sm" onClick={action.onClick}>
-              {action.label}
-            </Button>
-          )}
+          {renderAction()}
         </div>
       )}
     </div>
