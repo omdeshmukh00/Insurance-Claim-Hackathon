@@ -1,117 +1,120 @@
 # AI Insurance Claims Intelligence Platform
 
-An intelligent, multi-agent insurance claims processing and assessment system designed with a strict decoupled architecture.
+An intelligent, multi-agent insurance claims processing and assessment platform with a strictly decoupled architecture, Supabase PostgreSQL persistence, and Google Gemini AI orchestration.
 
 ---
 
-## 🏛️ Architectural Overview
+## 🏛️ Monorepo & Architectural Overview
 
-This repository is strictly partitioned into two independent applications:
+This repository is organized as an **npm workspace** containing two independent applications:
 
 ```text
 insurance-claims-ai/
-├── frontend/                 # Decoupled Next.js client application
-│   ├── src/
-│   │   └── app/              # Next.js App Router (UI & Pages)
-│   ├── package.json          # Independent frontend dependencies & scripts
+├── .github/
+│   └── workflows/
+│       └── ci.yml             # GitHub Actions CI workflow (lint, test, build)
+├── frontend/                  # Next.js App Router client application
+│   ├── app/                   # Next.js pages & layouts
+│   ├── components/            # UI components (Radix + Tailwind CSS)
+│   ├── package.json           # Frontend dependencies & scripts
 │   └── tsconfig.json
 │
-├── backend/                  # Independent API, AI Agents & Business Logic service
+├── backend/                   # Express + TypeScript claims intelligence service
 │   ├── src/
-│   │   ├── api/              # HTTP REST routes, controllers & middleware
-│   │   ├── agents/           # Specialized AI agents (validation, fraud, loss)
-│   │   ├── orchestration/    # Multi-agent workflows & consensus engine
-│   │   ├── rag/              # Knowledge retrieval, policy vector stores & embeddings
-│   │   ├── document-processing/ # Multimodal OCR, document parsing & ingestion
-│   │   ├── claims/           # Claim assessment rules & lifecycle management
-│   │   └── index.ts          # Server entry point
-│   ├── package.json          # Independent backend dependencies & scripts
-│   ├── tsconfig.json
-│   └── .env.example
+│   │   ├── api/               # REST controllers, routes & middleware
+│   │   ├── agents/            # Autonomous AI agents (Document, Policy, Coverage, Anomaly, Missing Info, Assessment, Settlement)
+│   │   ├── orchestration/     # Multi-agent claim investigation pipeline
+│   │   ├── claims/            # Claim CRUD, reviews & settlements
+│   │   ├── services/          # Gemini GenAI, SMTP & HTML email templates
+│   │   ├── repositories/      # Unified data access layer (Supabase + in-memory store)
+│   │   └── index.ts           # Server entry point
+│   ├── migrations/            # Supabase PostgreSQL schema, RLS policies & seed data
+│   ├── tests/                 # Automated test suites (36 tests, 100% passing)
+│   ├── package.json           # Backend dependencies & scripts
+│   └── tsconfig.json
 │
-└── README.md                 # System architecture documentation
+├── package.json               # Root workspace configuration
+└── README.md                  # Project documentation
 ```
-
-### Architectural Principles & Boundaries
-
-1. **Strict Separation of Concerns**:
-   - `/frontend` is exclusively responsible for presentation, user interfaces, claim submission dashboards, interactive visualizations, and user experience.
-   - `/backend` contains all computational logic, business rules, document extraction/OCR, RAG pipelines, AI agent swarms, and claim assessment decisions.
-2. **No Monolithic Leaks**:
-   - Backend AI logic, vector stores, and orchestration are **strictly prohibited** from living inside the Next.js application.
-   - The Next.js frontend communicates with the backend **solely over standard HTTP APIs**.
-3. **Independent Lifecycles**:
-   - Each application maintains its own `package.json`, dependencies, configuration, and build artifacts.
-   - Either application can be developed, tested, deployed, and scaled independently without coupling.
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quick Start (Root Monorepo)
 
-### Prerequisites
+### 1. Prerequisites
 - Node.js (v20+ or v24+)
 - npm (v10+)
 
+### 2. Install Dependencies
+Run in the repository root:
+```bash
+npm install
+```
+
+### 3. Start Both Backend & Frontend Concurrently
+From the root folder:
+```bash
+npm run dev
+```
+- **Backend API**: `http://localhost:5000`
+- **Frontend Next.js**: `http://localhost:3000`
+
+### 4. Lint Both Applications
+From the root folder:
+```bash
+npm run lint
+```
+Runs `tsc --noEmit` on the backend and `eslint .` on the frontend.
+
+### 5. Build Both Applications
+From the root folder:
+```bash
+npm run build
+```
+Compiles TypeScript for the backend and creates an optimized production Next.js build for the frontend.
+
+### 6. Run Test Suite
+From the root folder:
+```bash
+npm test
+```
+Executes all 36 backend tests verifying authentication, role guards, document storage, multi-agent AI pipeline, and settlement authorization.
+
 ---
 
-### Running the Backend
+## ⚙️ Independent Application Commands
 
-The backend runs an Express + TypeScript API server exposing health checks and intelligence endpoints.
+You can also run commands inside individual workspaces:
 
+### Backend
 ```bash
 cd backend
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
+npm run dev        # Run backend with hot-reload (tsx)
+npm run lint       # Run backend type checking
+npm run test       # Run Vitest test suites
+npm run build      # Compile TypeScript to dist/
+npm start          # Run compiled production server
 ```
 
-Default backend address: `http://localhost:5000`
-
----
-
-### Running the Frontend
-
-The frontend runs a Next.js application using App Router and TypeScript.
-
+### Frontend
 ```bash
 cd frontend
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
+npm run dev        # Run Next.js development server
+npm run lint       # Run ESLint
+npm run build      # Create Next.js production build
+npm start          # Run Next.js production server
 ```
-
-Default frontend address: `http://localhost:3000`
 
 ---
 
-## 🔌 API Communication
+## 🔄 GitHub Actions CI
 
-The frontend interacts with the backend over HTTP. During local development:
-
-| Endpoint | Method | Description |
-| :--- | :--- | :--- |
-| `/health` | `GET` | Backend health and availability check |
-| `/api/status` | `GET` | Backend intelligence modules and services status |
+Every push or pull request to the `main` branch triggers `.github/workflows/ci.yml`:
+1. **Lint & Type Check**: Runs `npm run lint` across all workspaces.
+2. **Backend Unit & Integration Tests**: Runs `npm test` across all 36 test suites.
+3. **Monorepo Build**: Compiles both backend and frontend applications.
 
 ---
 
 ## 🛡️ License
-Proprietary / Internal - AI Insurance Claims Intelligence Project
+Proprietary / Internal — AI Insurance Claims Intelligence Project
