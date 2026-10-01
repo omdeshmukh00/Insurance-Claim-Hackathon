@@ -209,7 +209,7 @@ export default function LandingAndDashboardPage() {
             </div>
             <div className="mt-3 flex items-baseline gap-2">
               <span className="text-2xl font-black text-slate-900">
-                ${loading ? "..." : totalSettledAmount.toLocaleString()}
+                ₹{loading ? "..." : totalSettledAmount.toLocaleString()}
               </span>
               <span className="text-xs text-slate-500">disbursed</span>
             </div>
@@ -341,7 +341,7 @@ export default function LandingAndDashboardPage() {
                     <p className="text-sm font-semibold text-slate-800">{claim.title}</p>
                     <div className="flex items-center gap-4 text-xs text-slate-500">
                       <span>Incident: {claim.incident_date}</span>
-                      <span>Amount: ${Number(claim.claim_amount || 0).toLocaleString()}</span>
+                      <span>Amount: ₹{Number(claim.claim_amount || 0).toLocaleString()}</span>
                     </div>
                   </div>
 
@@ -412,7 +412,7 @@ export default function LandingAndDashboardPage() {
                   <h4 className="text-xs font-bold text-slate-900">{policy.policy_name}</h4>
                   <div className="text-[11px] text-slate-500 space-y-0.5">
                     <p>Policy #: <span className="font-mono text-slate-700">{policy.policy_number}</span></p>
-                    <p>Deductible: ${Number(policy.deductible || 0).toLocaleString()}</p>
+                    <p>Deductible: ₹{Number(policy.deductible || 0).toLocaleString()}</p>
                   </div>
                   <div className="pt-1 flex items-center justify-between">
                     <Link

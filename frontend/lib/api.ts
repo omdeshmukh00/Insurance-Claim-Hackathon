@@ -383,7 +383,12 @@ export const api = {
     }>(`/api/claims/${claimId}/settlement`),
 
   // AI Assistant (Agent 9)
-  askAssistant: (data: { message: string; claimId?: string; policyId?: string }) =>
+  askAssistant: (data: {
+    message: string;
+    claimId?: string;
+    policyId?: string;
+    screenContext?: Record<string, any>;
+  }) =>
     fetchFromBackend<{
       answer: string;
       reply?: string;

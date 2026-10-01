@@ -431,7 +431,7 @@ export default function PolicyUploadPage() {
               {/* Premium */}
               <div>
                 <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">
-                  Premium Amount
+                  Premium Amount (₹)
                 </label>
                 <input
                   type="number"
@@ -446,7 +446,7 @@ export default function PolicyUploadPage() {
               {/* Deductible */}
               <div>
                 <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">
-                  Deductible Amount
+                  Deductible Amount (₹)
                 </label>
                 <input
                   type="number"

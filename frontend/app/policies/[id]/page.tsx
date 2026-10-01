@@ -128,10 +128,10 @@ export default function PolicyDetailPage({ params }: { params: Promise<{ id: str
           <div className="flex sm:flex-col items-start sm:items-end justify-between sm:justify-center border-t sm:border-t-0 pt-3 sm:pt-0 border-[var(--border-subtle)]">
             <span className="text-xs text-[var(--text-muted)]">Annual Premium</span>
             <span className="text-xl font-extrabold text-emerald-700">
-              ${Number(policy.premium || 0).toLocaleString()}
+              ₹{Number(policy.premium || 0).toLocaleString()}
             </span>
             <span className="text-[11px] text-[var(--text-tertiary)]">
-              Deductible: ${Number(policy.deductible || 0).toLocaleString()}
+              Deductible: ₹{Number(policy.deductible || 0).toLocaleString()}
             </span>
           </div>
         </div>
@@ -189,7 +189,7 @@ export default function PolicyDetailPage({ params }: { params: Promise<{ id: str
                     Standard Deductible
                   </span>
                   <span className="font-semibold text-amber-700">
-                    ${Number(policy.deductible || 0).toLocaleString()} per claim
+                    ₹{Number(policy.deductible || 0).toLocaleString()} per claim
                   </span>
                 </div>
               </div>
@@ -222,11 +222,11 @@ export default function PolicyDetailPage({ params }: { params: Promise<{ id: str
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between py-1 border-b border-[var(--border-subtle)]">
                   <span className="text-[var(--text-muted)]">Annual Premium</span>
-                  <span className="font-bold">${policy.premium}</span>
+                  <span className="font-bold">₹{Number(policy.premium || 0).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-[var(--border-subtle)]">
                   <span className="text-[var(--text-muted)]">Per-Incident Deductible</span>
-                  <span className="font-bold text-amber-700">${policy.deductible}</span>
+                  <span className="font-bold text-amber-700">₹{Number(policy.deductible || 0).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-[var(--border-subtle)]">
                   <span className="text-[var(--text-muted)]">Policyholder</span>
@@ -264,7 +264,7 @@ export default function PolicyDetailPage({ params }: { params: Promise<{ id: str
                     </span>
                   </div>
                   <p className="text-[11px] text-[var(--text-muted)] pl-6">
-                    Subject to standard policy deductible of ${policy.deductible}.
+                    Subject to standard policy deductible of ₹{Number(policy.deductible || 0).toLocaleString()}.
                   </p>
                 </div>
                 <div className="text-right text-[10px] text-[var(--text-tertiary)] shrink-0">

@@ -158,7 +158,7 @@ export default function ClaimDetailPage({ params }: { params: Promise<{ id: stri
               Claim Amount
             </span>
             <span className="text-2xl font-bold text-[var(--text-primary)]">
-              ${Number(claim.claim_amount || 0).toLocaleString()}
+              ₹{Number(claim.claim_amount || 0).toLocaleString()}
             </span>
           </div>
         </div>
@@ -259,7 +259,7 @@ export default function ClaimDetailPage({ params }: { params: Promise<{ id: stri
               </div>
               <div className="flex justify-between py-1 border-b border-[var(--border-subtle)]">
                 <span className="text-[var(--text-muted)]">Claim Amount</span>
-                <span className="font-bold">${claim.claim_amount}</span>
+                <span className="font-bold">₹{Number(claim.claim_amount || 0).toLocaleString()}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-[var(--border-subtle)]">
                 <span className="text-[var(--text-muted)]">Human Review</span>

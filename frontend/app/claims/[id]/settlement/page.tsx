@@ -121,21 +121,21 @@ export default function ClaimSettlementPage({ params }: { params: Promise<{ id: 
           <div className="flex justify-between py-1.5 border-b border-[var(--border-subtle)]">
             <span className="text-[var(--text-secondary)]">Total Claimed Loss Amount:</span>
             <span className="font-bold text-[var(--text-primary)]">
-              ${claimAmount.toLocaleString()}
+              ₹{claimAmount.toLocaleString()}
             </span>
           </div>
 
           <div className="flex justify-between py-1.5 border-b border-[var(--border-subtle)] text-amber-800">
             <span>Standard Policy Deductible Applied:</span>
             <span className="font-bold">
-              - ${deductibleApplied.toLocaleString()}
+              - ₹{deductibleApplied.toLocaleString()}
             </span>
           </div>
 
           <div className="flex justify-between py-2 text-sm font-extrabold text-emerald-800 border-t border-[var(--border-default)]">
             <span>Net Indemnity Disbursed / Recommended:</span>
             <span>
-              ${(settlement ? finalSettlementAmount : recommendedAmount).toLocaleString()}
+              ₹{(settlement ? finalSettlementAmount : recommendedAmount).toLocaleString()}
             </span>
           </div>
         </div>

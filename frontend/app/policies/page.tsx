@@ -168,7 +168,7 @@ export default function PoliciesPage() {
                       Deductible
                     </span>
                     <span className="font-bold text-[var(--text-primary)]">
-                      ${Number(policy.deductible || 0).toLocaleString()}
+                      ₹{Number(policy.deductible || 0).toLocaleString()}
                     </span>
                   </div>
                   <div>
@@ -176,7 +176,7 @@ export default function PoliciesPage() {
                       Premium
                     </span>
                     <span className="font-bold text-emerald-700">
-                      ${Number(policy.premium || 0).toLocaleString()}
+                      ₹{Number(policy.premium || 0).toLocaleString()}
                     </span>
                   </div>
                 </div>

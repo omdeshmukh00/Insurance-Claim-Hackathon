@@ -167,7 +167,7 @@ export default function ClaimsListPage() {
                     Claim Amount
                   </span>
                   <span className="text-base font-bold text-[var(--text-primary)]">
-                    ${Number(claim.claim_amount || 0).toLocaleString()}
+                    ₹{Number(claim.claim_amount || 0).toLocaleString()}
                   </span>
                 </div>
 
