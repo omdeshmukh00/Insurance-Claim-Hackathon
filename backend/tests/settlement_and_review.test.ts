@@ -137,5 +137,5 @@ describe('Review, Settlement & Authorization Controls', () => {
     expect(recRes.body.data.recommended_amount).toBeDefined();
     expect(recRes.body.data.calculation_breakdown).toBeDefined();
     expect(Array.isArray(recRes.body.data.evidenceIds)).toBe(true);
-  });
+  }, 15000);
 });

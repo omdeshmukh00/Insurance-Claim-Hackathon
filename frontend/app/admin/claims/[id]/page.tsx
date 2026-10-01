@@ -534,7 +534,7 @@ export default function AdminClaimWorkspacePage() {
                       Agent Orchestration Pipeline
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                      {investigation.agent_runs.map((run) => (
+                      {investigation.agent_runs.map((run: any) => (
                         <div
                           key={run.id}
                           className="p-3 rounded-[var(--radius-md)] bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs space-y-1"

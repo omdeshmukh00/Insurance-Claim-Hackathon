@@ -1,28 +1,5 @@
-"use client";
+import UserDashboardPage from "../page";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/auth";
-
-export default function LegacyDashboardRedirect() {
-  const { user, role, isLoading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isLoading) return;
-
-    if (!user) {
-      router.replace("/login");
-    } else if (role === "ADMIN") {
-      router.replace("/admin/dashboard");
-    } else {
-      router.replace("/user/dashboard");
-    }
-  }, [user, role, isLoading, router]);
-
-  return (
-    <div className="py-20 flex items-center justify-center">
-      <div className="h-6 w-6 rounded-full border-2 border-[var(--green-600)] border-t-transparent animate-spin" />
-    </div>
-  );
+export default function DashboardRoute() {
+  return <UserDashboardPage />;
 }

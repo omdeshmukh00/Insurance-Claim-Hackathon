@@ -3,7 +3,20 @@ import { userPolicyRepository, claimRepository, missingInfoRepository, evidenceR
 import { geminiService } from '../services/geminiService.js';
 import { logger } from '../utils/logger.js';
 
-export const assistantResponseSchema = z
+export interface AssistantReference {
+  type: 'policy' | 'claim' | 'evidence';
+  id: string;
+  title: string;
+  quote?: string;
+}
+
+export interface AssistantResponse {
+  answer: string;
+  references: AssistantReference[];
+  suggestedQuestions: string[];
+}
+
+export const assistantResponseSchema: z.ZodType<AssistantResponse> = z
   .object({
     answer: z.string().optional(),
     response: z.string().optional(),
@@ -23,9 +36,9 @@ export const assistantResponseSchema = z
     suggestedQuestions: z.array(z.string()).default([]),
     suggested_questions: z.array(z.string()).default([]),
   })
-  .transform((val) => ({
+  .transform((val): AssistantResponse => ({
     answer: val.answer || val.response || val.reply || 'No direct answer available.',
-    references: val.references.map((r: any) => ({
+    references: val.references.map((r: any): AssistantReference => ({
       type: (['policy', 'claim', 'evidence'].includes(r.type) ? r.type : 'policy') as 'policy' | 'claim' | 'evidence',
       id: r.id || r.policy_id || 'ref-1',
       title: r.title || r.policy_name || 'Policy Reference',
@@ -38,8 +51,6 @@ export const assistantResponseSchema = z
           ? val.suggested_questions
           : [],
   }));
-
-export type AssistantResponse = z.infer<typeof assistantResponseSchema>;
 
 export const assistantAgent = {
   async processUserQuery(
