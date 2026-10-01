@@ -1,0 +1,334 @@
+/* Google Fonts — must precede all other rules */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..800;1,14..32,300..500&family=DM+Serif+Display:ital@0;1&display=swap");
+
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────
+   DESIGN SYSTEM TOKENS
+   ───────────────────────────────────────────────────────── */
+:root {
+  /* --- Brand: Deep Forest Green --- */
+  --green-50:  #f0faf0;
+  --green-100: #dcf3dc;
+  --green-200: #bce6bc;
+  --green-300: #8ed08e;
+  --green-400: #59b359;
+  --green-500: #2e8b2e;
+  --green-600: #1f6b1f;  /* PRIMARY */
+  --green-700: #175117;
+  --green-800: #123d12;
+  --green-900: #0d2b0d;
+  --green-950: #071407;
+
+  /* --- Amber / Golden Orange (Primary Action) --- */
+  --amber-50:  #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-200: #fde68a;
+  --amber-300: #fcd34d;
+  --amber-400: #fbbf24;
+  --amber-500: #f59e0b;  /* PRIMARY ACTION */
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+  --amber-800: #92400e;
+  --amber-900: #78350f;
+
+  /* --- Semantic --- */
+  --color-error-light:   #fef2f2;
+  --color-error:         #dc2626;
+  --color-error-dark:    #991b1b;
+  --color-warning-light: #fffbeb;
+  --color-warning:       #d97706;
+  --color-warning-dark:  #92400e;
+  --color-success-light: #f0faf0;
+  --color-success:       #2e8b2e;
+  --color-success-dark:  #175117;
+  --color-info-light:    #eff6ff;
+  --color-info:          #2563eb;
+  --color-info-dark:     #1d4ed8;
+
+  /* --- Surface / Background --- */
+  --bg-page:       #faf9f7;   /* warm off-white */
+  --bg-subtle:     #f4f2ee;   /* slightly darker off-white */
+  --bg-muted:      #ece9e2;
+  --bg-card:       #ffffff;
+  --bg-card-hover: #fefefe;
+  --bg-inverse:    #1a2e1a;
+
+  /* --- Foreground / Text --- */
+  --text-primary:   #1a2e1a;   /* near-black with green tint */
+  --text-secondary: #4a5e4a;
+  --text-tertiary:  #7a8f7a;
+  --text-muted:     #a0b0a0;
+  --text-inverse:   #f0faf0;
+  --text-on-primary:#ffffff;
+  --text-on-amber:  #1c1200;
+
+  /* --- Borders --- */
+  --border-subtle:  #e8e4dc;
+  --border-default: #d4cfc5;
+  --border-strong:  #b8b2a8;
+  --border-focus:   var(--green-600);
+
+  /* --- Shadows --- */
+  --shadow-xs: 0 1px 2px 0 rgba(26, 46, 26, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(26, 46, 26, 0.08), 0 1px 2px -1px rgba(26, 46, 26, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(26, 46, 26, 0.08), 0 2px 4px -2px rgba(26, 46, 26, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(26, 46, 26, 0.08), 0 4px 6px -4px rgba(26, 46, 26, 0.06);
+  --shadow-xl: 0 20px 25px -5px rgba(26, 46, 26, 0.08), 0 8px 10px -6px rgba(26, 46, 26, 0.06);
+  --shadow-card: 0 1px 3px 0 rgba(26, 46, 26, 0.07), 0 1px 2px -1px rgba(26, 46, 26, 0.05);
+
+  /* --- Radius --- */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-xl:  16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  /* --- Spacing scale (base 4px) --- */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* --- Typography --- */
+  --font-sans:   "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif:  "DM Serif Display", Georgia, serif;
+  --font-mono:   ui-monospace, "Cascadia Code", "Fira Mono", Menlo, Consolas, monospace;
+
+  --font-size-xs:   0.6875rem;  /* 11px */
+  --font-size-sm:   0.8125rem;  /* 13px */
+  --font-size-base: 0.9375rem;  /* 15px */
+  --font-size-md:   1rem;       /* 16px */
+  --font-size-lg:   1.125rem;   /* 18px */
+  --font-size-xl:   1.25rem;    /* 20px */
+  --font-size-2xl:  1.5rem;     /* 24px */
+  --font-size-3xl:  1.875rem;   /* 30px */
+  --font-size-4xl:  2.25rem;    /* 36px */
+
+  --line-height-tight:  1.25;
+  --line-height-snug:   1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed:1.65;
+
+  --font-weight-regular: 400;
+  --font-weight-medium:  500;
+  --font-weight-semibold:600;
+  --font-weight-bold:    700;
+
+  /* --- Transition --- */
+  --transition-fast:   100ms ease;
+  --transition-base:   150ms ease;
+  --transition-smooth: 200ms ease;
+  --transition-slow:   300ms ease;
+
+  /* --- Z-index layers --- */
+  --z-base:    0;
+  --z-raised:  1;
+  --z-overlay: 10;
+  --z-sticky:  100;
+  --z-modal:   200;
+  --z-popover: 300;
+  --z-toast:   400;
+}
+
+/* ─────────────────────────────────────────────────────────
+   BASE RESET & FOUNDATION
+   ───────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  color: var(--text-primary);
+  background-color: var(--bg-page);
+  overflow-x: hidden;
+}
+
+/* ─────────────────────────────────────────────────────────
+   SELECTION
+   ───────────────────────────────────────────────────────── */
+::selection {
+  background-color: var(--green-200);
+  color: var(--green-900);
+}
+
+/* ─────────────────────────────────────────────────────────
+   SCROLLBARS
+   ───────────────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-subtle); }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ─────────────────────────────────────────────────────────
+   TYPOGRAPHY HIERARCHY
+   ───────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.02em;
+}
+h1 { font-size: var(--font-size-3xl); letter-spacing: -0.03em; }
+h2 { font-size: var(--font-size-2xl); }
+h3 { font-size: var(--font-size-xl);  }
+h4 { font-size: var(--font-size-lg);  letter-spacing: -0.01em; }
+h5 { font-size: var(--font-size-md);  }
+h6 { font-size: var(--font-size-base);}
+
+p  { color: var(--text-secondary); line-height: var(--line-height-relaxed); }
+
+a  {
+  color: var(--green-600);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+a:hover { color: var(--green-700); text-decoration: underline; }
+
+/* ─────────────────────────────────────────────────────────
+   FOCUS STYLES (accessibility)
+   ───────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--green-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─────────────────────────────────────────────────────────
+   UTILITY HELPERS
+   ───────────────────────────────────────────────────────── */
+
+/* Card surface */
+.surface-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+/* Section divider */
+.divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: var(--space-6) 0;
+}
+
+/* Monospace data */
+.font-mono {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+/* Data/value emphasis */
+.data-value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+}
+
+/* Label above inputs */
+.form-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+  letter-spacing: 0.01em;
+}
+
+/* Status dot */
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+.status-dot.online   { background: var(--color-success); }
+.status-dot.warning  { background: var(--color-warning); }
+.status-dot.offline  { background: var(--color-error);   }
+.status-dot.idle     { background: var(--text-muted);    }
+
+/* Animated pulse for status dots */
+.status-dot.pulse {
+  animation: statusPulse 2s ease-in-out infinite;
+}
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* Shimmer skeleton */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-subtle) 0%,
+    var(--bg-muted)  50%,
+    var(--bg-subtle) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: var(--radius-md);
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Page fade-in */
+.page-enter {
+  animation: pageEnter 0.25s ease-out;
+}
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* Overlay backdrop */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 15, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ─────────────────────────────────────────────────────────
+   FORM ELEMENT BASE STYLES
+   ───────────────────────────────────────────────────────── */
+input, textarea, select {
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+/* ─────────────────────────────────────────────────────────
+   PRINT STYLES
+   ───────────────────────────────────────────────────────── */
+@media print {
+  body { background: white; color: black; }
+  .no-print { display: none !important; }
+}
