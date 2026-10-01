@@ -44,6 +44,16 @@ CREATE POLICY "Users can update own policies"
   ON user_policies FOR UPDATE
   USING (user_id = auth.uid() OR is_claims_staff());
 
+-- Seed default profiles for testing
+INSERT INTO profiles (id, email, full_name, role)
+VALUES
+  ('11111111-0000-0000-0000-000000000001', 'claimant@example.com', 'Alice Claimant', 'CLAIMANT'),
+  ('11111111-0000-0000-0000-000000000002', 'other_claimant@example.com', 'Bob Claimant', 'CLAIMANT'),
+  ('22222222-0000-0000-0000-000000000002', 'officer@example.com', 'Charlie Officer', 'CLAIMS_OFFICER'),
+  ('33333333-0000-0000-0000-000000000003', 'investigator@example.com', 'Dana Investigator', 'INVESTIGATOR'),
+  ('44444444-0000-0000-0000-000000000004', 'admin@example.com', 'Evan Admin', 'ADMIN')
+ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email, full_name = EXCLUDED.full_name, role = EXCLUDED.role;
+
 -- Seed sample user policies for testing
 INSERT INTO user_policies (
   id,

@@ -219,28 +219,67 @@ export default function PolicyUploadPage() {
 
       {/* STEP 2: ANALYZING PROGRESS */}
       {step === "ANALYZING" && (
-        <div className="rounded-2xl bg-white border border-[var(--border-subtle)] p-12 text-center shadow-xs space-y-6">
-          <div className="h-16 w-16 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto animate-pulse">
-            <Loader2 className="h-8 w-8 animate-spin" />
-          </div>
-          <div>
-            <h3 className="text-base font-bold text-[var(--text-primary)]">
-              AI Policy Document Agent at Work
-            </h3>
-            <p className="text-xs text-[var(--text-muted)] mt-1 max-w-md mx-auto">
-              Extracting insurer clauses, coverage tables, deductibles, and preserving source evidence links.
-            </p>
+        <div className="rounded-2xl bg-white border border-[var(--border-subtle)] p-8 sm:p-12 text-center shadow-xs space-y-8">
+          <div className="space-y-3">
+            <div className="h-16 w-16 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto shadow-inner">
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+            <div>
+              <h3 className="text-xl font-extrabold text-[var(--text-primary)]">
+                Analyzing your policy...
+              </h3>
+              <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+                Our Policy Document Agent is inspecting {selectedFile?.name} using multimodal document understanding.
+              </p>
+            </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] max-w-md mx-auto text-xs text-left space-y-2">
-            <div className="flex items-center gap-2 text-emerald-800 font-semibold">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-              <span>{analyzingStage}</span>
+          {/* 5 Explicit Stages */}
+          <div className="max-w-md mx-auto rounded-2xl bg-slate-50 border border-slate-200/80 p-5 text-left space-y-3.5">
+            <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+              <span className="flex items-center gap-2.5">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                <span>Document Analysis & Text OCR</span>
+              </span>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Completed</span>
             </div>
-            <p className="text-[11px] text-[var(--text-tertiary)]">
-              Document: {selectedFile?.name}
-            </p>
+
+            <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+              <span className="flex items-center gap-2.5">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                <span>Policy Information Extraction</span>
+              </span>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Completed</span>
+            </div>
+
+            <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+              <span className="flex items-center gap-2.5">
+                <div className="h-4 w-4 rounded-full border-2 border-emerald-600 border-t-transparent animate-spin" />
+                <span>Coverage Extraction</span>
+              </span>
+              <span className="text-[10px] font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full animate-pulse">Running</span>
+            </div>
+
+            <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+              <span className="flex items-center gap-2.5">
+                <div className="h-4 w-4 rounded-full border border-slate-300" />
+                <span>Exclusion Detection</span>
+              </span>
+              <span className="text-[10px] font-medium text-slate-400">Pending</span>
+            </div>
+
+            <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+              <span className="flex items-center gap-2.5">
+                <div className="h-4 w-4 rounded-full border border-slate-300" />
+                <span>Limit & Deductible Extraction</span>
+              </span>
+              <span className="text-[10px] font-medium text-slate-400">Pending</span>
+            </div>
           </div>
+
+          <p className="text-[11px] text-slate-400">
+            Current status: {analyzingStage}
+          </p>
         </div>
       )}
 

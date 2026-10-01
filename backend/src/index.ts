@@ -12,6 +12,7 @@ import { auditController } from './api/auditController.js';
 import { requireAuth, requireRole } from './middleware/auth.js';
 import { NotFoundError } from './utils/errors.js';
 import { logger } from './utils/logger.js';
+import { isPostgresConfigured, getPostgresPool } from './config/postgres.js';
 
 export const app = express();
 
@@ -82,7 +83,19 @@ app.use(errorHandler);
 
 // Start server when run directly (not during vitest test imports)
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(config.PORT, () => {
+  app.listen(config.PORT, async () => {
     logger.info(`Backend server running on http://localhost:${config.PORT} [${config.NODE_ENV}]`);
+    if (isPostgresConfigured()) {
+      try {
+        const pool = getPostgresPool();
+        const res = await pool?.query('SELECT current_database(), current_user;');
+        logger.info('Connected to Supabase PostgreSQL database', {
+          db: res?.rows[0]?.current_database,
+          user: res?.rows[0]?.current_user,
+        });
+      } catch (err: any) {
+        logger.warn('Could not connect to Supabase PostgreSQL pool on startup', { error: err.message });
+      }
+    }
   });
 }

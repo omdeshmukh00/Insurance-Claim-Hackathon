@@ -19,9 +19,9 @@ export default function LoginPage() {
   useEffect(() => {
     if (!authLoading && user) {
       if (role === "ADMIN") {
-        router.replace("/admin/dashboard");
+        router.replace("/administrator");
       } else {
-        router.replace("/user/dashboard");
+        router.replace("/");
       }
     }
   }, [user, role, authLoading, router]);
@@ -49,9 +49,9 @@ export default function LoginPage() {
 
       // Role-based redirection governed strictly by the returned user profile
       if (authenticatedUser.role === "ADMIN") {
-        router.push("/admin/dashboard");
+        router.push("/administrator");
       } else {
-        router.push("/user/dashboard");
+        router.push("/");
       }
     } catch (err: any) {
       // User-friendly message instead of raw backend or HTTP status traces

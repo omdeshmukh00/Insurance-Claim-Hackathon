@@ -2,6 +2,7 @@
 import React from "react";
 import { Sidebar } from "./Sidebar";
 import { Navbar } from "./Navbar";
+import { OnScreenAgent } from "../agent/OnScreenAgent";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -19,6 +20,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="max-w-7xl mx-auto">{children}</div>
         </main>
       </div>
+      <OnScreenAgent />
     </div>
   );
 }

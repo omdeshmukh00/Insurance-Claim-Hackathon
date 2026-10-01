@@ -2,23 +2,31 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ShieldCheck,
+  FileCheck2,
   FileText,
   AlertTriangle,
   Bot,
-  PlusCircle,
   ArrowRight,
   Clock,
   CheckCircle2,
   DollarSign,
-  FileCheck2,
   Sparkles,
+  Search,
+  Scale,
+  Cpu,
+  Layers,
+  HelpCircle,
+  ExternalLink,
+  ChevronRight,
+  ShieldAlert,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/authContext";
 
-export default function UserDashboardPage() {
+export default function LandingAndDashboardPage() {
   const { user } = useAuth();
   const [policies, setPolicies] = useState<any[]>([]);
   const [claims, setClaims] = useState<any[]>([]);
@@ -26,405 +34,471 @@ export default function UserDashboardPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadDashboardData() {
+    async function loadData() {
       try {
         setLoading(true);
+        setError(null);
         const [policiesData, claimsData] = await Promise.all([
           api.listPolicies().catch(() => []),
           api.listClaims().catch(() => []),
         ]);
-        setPolicies(policiesData || []);
-        setClaims(claimsData || []);
+        setPolicies(Array.isArray(policiesData) ? policiesData : []);
+        setClaims(Array.isArray(claimsData) ? claimsData : []);
       } catch (err: any) {
         setError(err.message || "Failed to load dashboard data");
       } finally {
         setLoading(false);
       }
     }
-    loadDashboardData();
+    loadData();
   }, []);
 
-  const activePolicies = policies.filter((p) => p.status === "ACTIVE");
-  const pendingClaims = claims.filter(
-    (c) => c.status === "SUBMITTED" || c.status === "IN_REVIEW" || c.status === "UNDER_REVIEW"
-  );
-  const claimsRequiringAction = claims.filter(
-    (c) => c.requires_human_review || c.status === "UNDER_REVIEW"
-  );
-  const settledClaims = claims.filter((c) => c.status === "SETTLED");
-  const totalSettledAmount = settledClaims.reduce(
-    (acc, c) => acc + (c.claim_amount || 0),
-    0
-  );
+  const activePoliciesCount = policies.filter((p) => p.status === "ACTIVE").length;
+  const pendingClaimsCount = claims.filter(
+    (c) => c.status !== "SETTLED" && c.status !== "REJECTED"
+  ).length;
+  const claimsRequiringActionCount = claims.filter(
+    (c) => c.requires_human_review || c.status === "REQUIRES_INFO"
+  ).length;
+  const totalSettledAmount = claims
+    .filter((c) => c.status === "SETTLED")
+    .reduce((sum, c) => sum + (Number(c.claim_amount) || 0), 0);
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "SUBMITTED":
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">Submitted</span>;
+      case "UNDER_INVESTIGATION":
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 animate-pulse">AI Investigating</span>;
+      case "REQUIRES_INFO":
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-50 text-orange-800 border border-orange-200">Info Required</span>;
+      case "UNDER_REVIEW":
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">Officer Review</span>;
+      case "APPROVED":
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">Approved</span>;
+      case "SETTLED":
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-800 border border-green-200">Settled</span>;
+      case "REJECTED":
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-50 text-red-800 border border-red-200">Rejected</span>;
+      default:
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">{status}</span>;
+    }
+  };
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto pb-12">
-      {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-900 p-8 text-white shadow-md">
-        <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-200 text-xs font-semibold backdrop-blur-xs mb-3 border border-emerald-400/20">
-            <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-            AI Claims Intelligence Active
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-            Welcome back, {user.fullName || "Policyholder"}
-          </h1>
-          <p className="mt-2 text-sm text-emerald-100/90 leading-relaxed">
-            Manage your verified policies, track automated AI claim investigations in real time, and ask your grounded policy assistant anything.
-          </p>
+    <div className="space-y-12 pb-16">
+      {/* ─────────────────────────────────────────────────────────────
+          1. HERO SECTION (With 'hero-section-img.png')
+          ───────────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#123d12] via-[#175117] to-[#0d2b0d] text-white p-8 md:p-12 lg:p-14 shadow-2xl border border-emerald-900/40">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          {/* Left Column: Headline, Copy, CTAs, Trust line */}
+          <div className="lg:col-span-6 space-y-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold tracking-wider uppercase">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>AI Insurance Claims Intelligence</span>
+            </div>
 
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Link
-              href="/policies/upload"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-emerald-900 font-semibold text-xs hover:bg-emerald-50 transition-colors shadow-sm"
-            >
-              <PlusCircle className="h-4 w-4 text-emerald-700" />
-              <span>Add Existing Policy</span>
-            </Link>
-            <Link
-              href="/claims/new"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-semibold text-xs hover:bg-amber-400 transition-colors shadow-sm"
-            >
-              <FileText className="h-4 w-4" />
-              <span>Submit New Claim</span>
-            </Link>
-            <Link
-              href="/assistant"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-700/60 border border-emerald-400/30 text-white font-medium text-xs hover:bg-emerald-700 transition-colors"
-            >
-              <Bot className="h-4 w-4 text-emerald-300" />
-              <span>Ask AI Assistant</span>
-            </Link>
-          </div>
-        </div>
-      </div>
+            <div className="space-y-3">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.15]">
+                Smarter Claims. <br />
+                <span className="text-emerald-300">Clearer Decisions.</span>
+              </h1>
+              <p className="text-base sm:text-lg text-emerald-100/90 leading-relaxed max-w-xl">
+                Submit your claim, upload your documents, and let AI investigate the details — from policy coverage and missing information to inconsistencies and claim assessment — with every recommendation backed by evidence.
+              </p>
+            </div>
 
-      {/* KPI Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Active Policies */}
-        <div className="p-5 rounded-2xl bg-white border border-[var(--border-subtle)] shadow-xs flex items-center justify-between">
-          <div>
-            <p className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">
-              Active Policies
-            </p>
-            <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">
-              {loading ? "..." : activePolicies.length}
-            </p>
-            <Link
-              href="/policies"
-              className="inline-flex items-center gap-1 text-xs text-[var(--green-700)] hover:underline mt-2 font-medium"
-            >
-              <span>View policies</span>
-              <ArrowRight className="h-3 w-3" />
-            </Link>
-          </div>
-          <div className="h-12 w-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-            <FileCheck2 className="h-6 w-6" />
-          </div>
-        </div>
-
-        {/* Pending Claims */}
-        <div className="p-5 rounded-2xl bg-white border border-[var(--border-subtle)] shadow-xs flex items-center justify-between">
-          <div>
-            <p className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">
-              Pending Claims
-            </p>
-            <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">
-              {loading ? "..." : pendingClaims.length}
-            </p>
-            <Link
-              href="/claims"
-              className="inline-flex items-center gap-1 text-xs text-[var(--green-700)] hover:underline mt-2 font-medium"
-            >
-              <span>Track progress</span>
-              <ArrowRight className="h-3 w-3" />
-            </Link>
-          </div>
-          <div className="h-12 w-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
-            <Clock className="h-6 w-6" />
-          </div>
-        </div>
-
-        {/* Claims Requiring Action */}
-        <div className="p-5 rounded-2xl bg-white border border-[var(--border-subtle)] shadow-xs flex items-center justify-between">
-          <div>
-            <p className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">
-              Action Required
-            </p>
-            <p className="text-2xl font-bold text-amber-600 mt-1">
-              {loading ? "..." : claimsRequiringAction.length}
-            </p>
-            <p className="text-xs text-[var(--text-tertiary)] mt-2">
-              {claimsRequiringAction.length > 0 ? "Staff review / items" : "All up to date"}
-            </p>
-          </div>
-          <div className="h-12 w-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
-            <AlertTriangle className="h-6 w-6" />
-          </div>
-        </div>
-
-        {/* Settlement Status */}
-        <div className="p-5 rounded-2xl bg-white border border-[var(--border-subtle)] shadow-xs flex items-center justify-between">
-          <div>
-            <p className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">
-              Total Settled
-            </p>
-            <p className="text-2xl font-bold text-emerald-700 mt-1">
-              ${loading ? "..." : totalSettledAmount.toLocaleString()}
-            </p>
-            <p className="text-xs text-[var(--text-tertiary)] mt-2">
-              {settledClaims.length} claim(s) disbursed
-            </p>
-          </div>
-          <div className="h-12 w-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-            <DollarSign className="h-6 w-6" />
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content Columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left 2 Cols: Recent Claims & AI Status */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Recent Claims Card */}
-          <div className="rounded-2xl bg-white border border-[var(--border-subtle)] p-6 shadow-xs">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-base font-bold text-[var(--text-primary)]">
-                  My Claims
-                </h2>
-                <p className="text-xs text-[var(--text-muted)]">
-                  Active filings undergoing autonomous multi-agent verification
-                </p>
-              </div>
+            {/* CTAs */}
+            <div className="flex flex-wrap items-center gap-3.5 pt-2">
               <Link
                 href="/claims/new"
-                className="text-xs font-semibold text-[var(--green-700)] hover:text-[var(--green-800)] flex items-center gap-1"
+                className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 shadow-lg hover:shadow-xl transition-all duration-150 transform hover:-translate-y-0.5"
               >
-                <span>File Claim</span>
-                <ArrowRight className="h-3 w-3" />
+                <span>Start a Claim</span>
+                <ArrowRight className="h-4 w-4" />
               </Link>
-            </div>
-
-            {loading ? (
-              <div className="py-8 text-center text-xs text-[var(--text-muted)]">
-                Loading claims...
-              </div>
-            ) : claims.length === 0 ? (
-              <div className="py-10 text-center rounded-xl bg-[var(--bg-subtle)]/50 border border-dashed border-[var(--border-default)]">
-                <FileText className="h-8 w-8 text-[var(--text-muted)] mx-auto mb-2" />
-                <p className="text-sm font-semibold text-[var(--text-secondary)]">No claims submitted yet</p>
-                <p className="text-xs text-[var(--text-muted)] max-w-sm mx-auto mt-1 mb-4">
-                  When you experience an incident, submit a claim here to trigger immediate AI verification and policy correlation.
-                </p>
-                <Link
-                  href="/claims/new"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--green-600)] text-white text-xs font-medium hover:bg-[var(--green-700)] transition-colors"
-                >
-                  <PlusCircle className="h-3.5 w-3.5" />
-                  <span>Start Claim</span>
-                </Link>
-              </div>
-            ) : (
-              <div className="divide-y divide-[var(--border-subtle)]">
-                {claims.slice(0, 4).map((claim) => (
-                  <div
-                    key={claim.id}
-                    className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[var(--bg-subtle)]/40 px-3 -mx-3 rounded-xl transition-colors"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-[var(--text-primary)]">
-                          {claim.claim_number}
-                        </span>
-                        <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                            claim.status === "SETTLED"
-                              ? "bg-emerald-100 text-emerald-800"
-                              : claim.status === "APPROVED"
-                              ? "bg-emerald-50 text-emerald-700"
-                              : claim.status === "UNDER_REVIEW" || claim.requires_human_review
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-blue-100 text-blue-800"
-                          }`}
-                        >
-                          {claim.status}
-                        </span>
-                      </div>
-                      <p className="text-sm font-semibold text-[var(--text-primary)] mt-1">
-                        {claim.title}
-                      </p>
-                      <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                        Policy: {claim.policy_number} • Incident Date: {claim.incident_date}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-3 shrink-0">
-                      <div className="text-right">
-                        <p className="text-xs text-[var(--text-muted)]">Amount</p>
-                        <p className="text-sm font-bold text-[var(--text-primary)]">
-                          ${Number(claim.claim_amount || 0).toLocaleString()}
-                        </p>
-                      </div>
-                      <Link
-                        href={`/claims/${claim.id}/investigation`}
-                        className="px-3 py-1.5 rounded-lg border border-[var(--border-default)] hover:border-[var(--green-500)] text-xs font-semibold text-[var(--text-primary)] hover:text-[var(--green-700)] transition-colors flex items-center gap-1"
-                      >
-                        <span>Investigation</span>
-                        <ArrowRight className="h-3 w-3" />
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* User Active Policies Preview */}
-          <div className="rounded-2xl bg-white border border-[var(--border-subtle)] p-6 shadow-xs">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-base font-bold text-[var(--text-primary)]">
-                  My Active Policies
-                </h2>
-                <p className="text-xs text-[var(--text-muted)]">
-                  Insurance contracts currently indexed for coverage analysis
-                </p>
-              </div>
               <Link
                 href="/policies"
-                className="text-xs font-semibold text-[var(--green-700)] hover:text-[var(--green-800)] flex items-center gap-1"
+                className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-semibold text-sm bg-white/10 hover:bg-white/15 text-white border border-white/20 backdrop-blur-xs transition-all duration-150"
               >
-                <span>All Policies</span>
-                <ArrowRight className="h-3 w-3" />
+                <FileCheck2 className="h-4 w-4 text-emerald-300" />
+                <span>View My Policies</span>
               </Link>
             </div>
 
-            {loading ? (
-              <div className="py-6 text-center text-xs text-[var(--text-muted)]">
-                Loading policies...
+            {/* Trust Line */}
+            <div className="pt-2 flex items-center gap-2 text-xs font-medium text-emerald-200/80">
+              <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
+              <span>Evidence-backed AI analysis • Human review when needed</span>
+            </div>
+          </div>
+
+          {/* Right Column: hero-section-img visual integration */}
+          <div className="lg:col-span-6 relative">
+            <div className="relative mx-auto rounded-2xl overflow-hidden shadow-2xl border border-emerald-400/25 bg-black/40 group">
+              <div className="relative w-full h-[260px] sm:h-[320px] md:h-[380px]">
+                <Image
+                  src="/hero-section-img.png"
+                  alt="InsuredYou Claims Intelligence Visual"
+                  fill
+                  priority
+                  className="object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
+                />
               </div>
-            ) : policies.length === 0 ? (
-              <div className="py-8 text-center rounded-xl bg-[var(--bg-subtle)]/50 border border-dashed border-[var(--border-default)]">
-                <FileCheck2 className="h-8 w-8 text-[var(--text-muted)] mx-auto mb-2" />
-                <p className="text-sm font-semibold text-[var(--text-secondary)]">No policies linked yet</p>
-                <p className="text-xs text-[var(--text-muted)] max-w-sm mx-auto mt-1 mb-4">
-                  Upload your existing insurance policy PDF or image to extract coverage terms automatically.
-                </p>
-                <Link
-                  href="/policies/upload"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--green-600)] text-white text-xs font-medium hover:bg-[var(--green-700)] transition-colors"
-                >
-                  <PlusCircle className="h-3.5 w-3.5" />
-                  <span>Upload Policy</span>
-                </Link>
+
+              {/* Overlay Glass Badges */}
+              <div className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950/80 backdrop-blur-md border border-white/10 text-white text-xs font-semibold shadow-lg">
+                <Cpu className="h-3.5 w-3.5 text-emerald-400" />
+                <span>6 Specialized AI Agents</span>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {policies.map((p) => (
-                  <Link
-                    key={p.id}
-                    href={`/policies/${p.id}`}
-                    className="group block p-4 rounded-xl border border-[var(--border-subtle)] hover:border-[var(--green-300)] hover:bg-[var(--green-50)]/30 transition-all shadow-xs"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 uppercase">
-                        {p.policy_type}
-                      </span>
-                      <span className="text-xs font-bold text-slate-700">
-                        Ded: ${p.deductible}
-                      </span>
-                    </div>
-                    <h3 className="text-sm font-bold text-[var(--text-primary)] mt-2 group-hover:text-[var(--green-700)] transition-colors">
-                      {p.policy_name}
-                    </h3>
-                    <p className="text-xs text-[var(--text-tertiary)] mt-0.5">
-                      {p.insurer_name} • {p.policy_number}
-                    </p>
-                    <div className="mt-3 pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                      <span>Expires {p.expiry_date}</span>
-                      <span className="font-semibold text-emerald-700">
-                        ${p.premium}/yr
-                      </span>
-                    </div>
-                  </Link>
-                ))}
+
+              <div className="absolute bottom-4 right-4 flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-950/85 backdrop-blur-md border border-emerald-400/30 text-emerald-200 text-xs font-semibold shadow-lg">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                <span>100% Grounded Evidence</span>
               </div>
-            )}
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Right 1 Col: AI Assistant Agent Mode CTA & Quick Actions */}
-        <div className="space-y-6">
-          {/* Agent Mode Card */}
-          <div className="rounded-2xl bg-gradient-to-br from-emerald-50 via-teal-50/50 to-amber-50/30 border border-emerald-200/80 p-6 shadow-xs">
-            <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm mb-2">
-              <Bot className="h-5 w-5 text-emerald-600" />
-              <span>Grounded AI Assistant</span>
-            </div>
-            <p className="text-xs text-[var(--text-secondary)] leading-relaxed mb-4">
-              Ask questions about your real insurance coverage. The AI agent retrieves exact policy clauses and verifiable evidence.
+      {/* ─────────────────────────────────────────────────────────────
+          2. LIVE DASHBOARD METRICS BAR (Real Backend Values)
+          ───────────────────────────────────────────────────────────── */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold tracking-tight text-slate-900">
+              Portfolio & Claims Overview
+            </h2>
+            <p className="text-xs text-slate-500">
+              Real-time synchronization with InsuredYou intelligence engine
             </p>
+          </div>
+          <Link
+            href="/policies/upload"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800"
+          >
+            <span>+ Add Existing Policy</span>
+          </Link>
+        </div>
 
-            <div className="space-y-2 mb-5">
-              {[
-                "Is my car accident covered?",
-                "What is my deductible?",
-                "What documents are missing?",
-              ].map((query, idx) => (
-                <Link
-                  key={idx}
-                  href={`/assistant?q=${encodeURIComponent(query)}`}
-                  className="block text-xs font-medium text-emerald-900 bg-white/80 hover:bg-white px-3 py-2 rounded-lg border border-emerald-200/60 shadow-xs transition-colors"
-                >
-                  "{query}"
-                </Link>
-              ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Active Policies */}
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Active Policies
+              </span>
+              <div className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                <ShieldCheck className="h-4 w-4" />
+              </div>
             </div>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="text-2xl font-black text-slate-900">
+                {loading ? "..." : activePoliciesCount}
+              </span>
+              <span className="text-xs text-slate-500">covered assets</span>
+            </div>
+          </div>
 
+          {/* Pending Claims */}
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Pending Claims
+              </span>
+              <div className="h-8 w-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+                <Clock className="h-4 w-4" />
+              </div>
+            </div>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="text-2xl font-black text-slate-900">
+                {loading ? "..." : pendingClaimsCount}
+              </span>
+              <span className="text-xs text-slate-500">in investigation</span>
+            </div>
+          </div>
+
+          {/* Claims Requiring Action */}
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Action Required
+              </span>
+              <div className="h-8 w-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+                <AlertTriangle className="h-4 w-4" />
+              </div>
+            </div>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="text-2xl font-black text-slate-900">
+                {loading ? "..." : claimsRequiringActionCount}
+              </span>
+              <span className="text-xs text-slate-500">documents / review</span>
+            </div>
+          </div>
+
+          {/* Total Settled */}
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Total Settled
+              </span>
+              <div className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                <DollarSign className="h-4 w-4" />
+              </div>
+            </div>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="text-2xl font-black text-slate-900">
+                ${loading ? "..." : totalSettledAmount.toLocaleString()}
+              </span>
+              <span className="text-xs text-slate-500">disbursed</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          3. HOW IT WORKS / CLAIMS PIPELINE
+          ───────────────────────────────────────────────────────────── */}
+      <section className="p-8 rounded-3xl bg-slate-50 border border-slate-200/80 space-y-6">
+        <div>
+          <span className="text-xs font-bold uppercase tracking-widest text-emerald-800">
+            Autonomous Multi-Agent Architecture
+          </span>
+          <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 mt-1">
+            How InsuredYou Investigates Every Claim
+          </h2>
+          <p className="text-xs text-slate-600 mt-1">
+            Deterministic rule-checking combined with specialized generative models to eliminate processing delays while maintaining human oversight.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3.5">
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-2">
+            <div className="h-7 w-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold">1</div>
+            <h3 className="text-xs font-bold text-slate-900">Document Agent</h3>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Extracts loss facts, dates, damages & receipts with confidence scores.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-2">
+            <div className="h-7 w-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold">2</div>
+            <h3 className="text-xs font-bold text-slate-900">Policy RAG Agent</h3>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Retrieves exact peril clauses, exclusions, waiting periods & limits.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-2">
+            <div className="h-7 w-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold">3</div>
+            <h3 className="text-xs font-bold text-slate-900">Coverage Agent</h3>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Cross-references incident facts against contractual perils with citations.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-2">
+            <div className="h-7 w-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold">4</div>
+            <h3 className="text-xs font-bold text-slate-900">Anomaly Agent</h3>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Detects date or invoice variances objectively without premature labels.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-2">
+            <div className="h-7 w-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold">5</div>
+            <h3 className="text-xs font-bold text-slate-900">Missing Info Agent</h3>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Identifies required police reports or estimates blocking determination.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-2">
+            <div className="h-7 w-7 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center text-xs font-bold">6</div>
+            <h3 className="text-xs font-bold text-slate-900">Assessment Agent</h3>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Synthesizes findings into automated processing vs human officer review.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          4. RECENT CLAIMS & ACTIVE POLICIES SECTION
+          ───────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left Column: Recent Claims (8 cols) */}
+        <div className="lg:col-span-8 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900">Recent Claims</h2>
             <Link
-              href="/assistant"
-              className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs transition-colors shadow-xs"
+              href="/claims"
+              className="text-xs font-semibold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
             >
-              <Bot className="h-4 w-4" />
-              <span>Open AI Assistant</span>
+              <span>View All Claims</span>
+              <ChevronRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
-          {/* Multi-Agent Architecture Overview */}
-          <div className="rounded-2xl bg-white border border-[var(--border-subtle)] p-5 shadow-xs">
-            <h3 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider mb-3">
-              Investigation Pipeline
-            </h3>
-            <p className="text-xs text-[var(--text-tertiary)] mb-4">
-              Autonomous agents collaborate to evaluate each submitted claim:
-            </p>
-
-            <div className="space-y-2.5 text-xs">
-              <div className="flex items-center gap-2 text-slate-700">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                <span><strong>Policy Document Agent:</strong> Extracts limits & clauses</span>
-              </div>
-              <div className="flex items-center gap-2 text-slate-700">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                <span><strong>Coverage Agent:</strong> Evaluates claim against perils</span>
-              </div>
-              <div className="flex items-center gap-2 text-slate-700">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                <span><strong>Anomaly Agent:</strong> Flags objective inconsistencies</span>
-              </div>
-              <div className="flex items-center gap-2 text-slate-700">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                <span><strong>Missing Info Agent:</strong> Itemizes required items</span>
-              </div>
-              <div className="flex items-center gap-2 text-slate-700">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                <span><strong>Assessment Agent:</strong> Synthesizes routing</span>
-              </div>
+          {loading ? (
+            <div className="p-12 text-center rounded-2xl bg-white border border-slate-200">
+              <div className="h-6 w-6 rounded-full border-2 border-emerald-600 border-t-transparent animate-spin mx-auto mb-2" />
+              <p className="text-xs text-slate-500">Loading claims from InsuredYou backend...</p>
             </div>
+          ) : claims.length === 0 ? (
+            <div className="p-8 text-center rounded-2xl bg-white border border-slate-200 space-y-3">
+              <FileText className="h-8 w-8 text-slate-400 mx-auto" />
+              <p className="text-sm font-semibold text-slate-800">You haven't submitted a claim yet.</p>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                File a new claim to experience autonomous multi-agent investigation and evidence-grounded adjudication.
+              </p>
+              <Link
+                href="/claims/new"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-700 text-white hover:bg-emerald-800 transition-colors shadow-xs"
+              >
+                <span>Start a Claim</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {claims.slice(0, 4).map((claim) => (
+                <div
+                  key={claim.id}
+                  className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-emerald-300 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-900">
+                        {claim.claim_number || "CLM-PENDING"}
+                      </span>
+                      {getStatusBadge(claim.status)}
+                      <span className="text-[11px] uppercase font-bold text-slate-400">
+                        {claim.claim_type || "AUTO"}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-slate-800">{claim.title}</p>
+                    <div className="flex items-center gap-4 text-xs text-slate-500">
+                      <span>Incident: {claim.incident_date}</span>
+                      <span>Amount: ${Number(claim.claim_amount || 0).toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Link
+                      href={`/claims/${claim.id}/investigation`}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors flex items-center gap-1.5"
+                    >
+                      <Cpu className="h-3.5 w-3.5" />
+                      <span>Live Investigation</span>
+                    </Link>
+                    <Link
+                      href={`/claims/${claim.id}`}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      Details
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Right Column: Active Policies (4 cols) */}
+        <div className="lg:col-span-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900">Active Policies</h2>
+            <Link
+              href="/policies"
+              className="text-xs font-semibold text-emerald-700 hover:text-emerald-800"
+            >
+              All Policies
+            </Link>
           </div>
+
+          {loading ? (
+            <div className="p-8 text-center rounded-2xl bg-white border border-slate-200">
+              <div className="h-6 w-6 rounded-full border-2 border-emerald-600 border-t-transparent animate-spin mx-auto mb-2" />
+              <p className="text-xs text-slate-500">Loading policies...</p>
+            </div>
+          ) : policies.length === 0 ? (
+            <div className="p-6 text-center rounded-2xl bg-white border border-slate-200 space-y-2">
+              <FileCheck2 className="h-8 w-8 text-slate-400 mx-auto" />
+              <p className="text-xs font-semibold text-slate-800">No policies registered</p>
+              <Link
+                href="/policies/upload"
+                className="inline-block text-xs font-bold text-emerald-700 hover:underline"
+              >
+                + Upload Insurance Policy
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {policies.slice(0, 3).map((policy) => (
+                <div
+                  key={policy.id}
+                  className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2 hover:border-emerald-300 transition-all"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-emerald-800">
+                      {policy.insurer_name}
+                    </span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                      {policy.status}
+                    </span>
+                  </div>
+                  <h4 className="text-xs font-bold text-slate-900">{policy.policy_name}</h4>
+                  <div className="text-[11px] text-slate-500 space-y-0.5">
+                    <p>Policy #: <span className="font-mono text-slate-700">{policy.policy_number}</span></p>
+                    <p>Deductible: ${Number(policy.deductible || 0).toLocaleString()}</p>
+                  </div>
+                  <div className="pt-1 flex items-center justify-between">
+                    <Link
+                      href={`/policies/${policy.id}`}
+                      className="text-xs font-bold text-emerald-700 hover:underline flex items-center gap-1"
+                    >
+                      <span>View Coverage</span>
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </Link>
+                    <Link
+                      href={`/claims/new?policyNumber=${policy.policy_number}`}
+                      className="text-xs font-semibold text-slate-600 hover:text-slate-900"
+                    >
+                      File Claim
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          5. FOOTER ASSISTANT PROMPT BANNER
+          ───────────────────────────────────────────────────────────── */}
+      <section className="p-6 md:p-8 rounded-3xl bg-emerald-950 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-2xl bg-emerald-800/80 border border-emerald-700/60 flex items-center justify-center shrink-0">
+            <Bot className="h-6 w-6 text-emerald-300" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold">Have questions about your coverage or active claim?</h3>
+            <p className="text-xs text-emerald-200/80 mt-0.5 max-w-xl">
+              Our grounded Insurance AI Assistant can cross-reference your specific policy clauses, explain deductibles, or detail missing documents in seconds.
+            </p>
+          </div>
+        </div>
+        <Link
+          href="/assistant"
+          className="px-5 py-2.5 rounded-xl font-bold text-xs bg-white text-emerald-950 hover:bg-emerald-50 transition-colors shrink-0 shadow-xs"
+        >
+          Ask AI Assistant
+        </Link>
+      </section>
     </div>
   );
 }
