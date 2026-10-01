@@ -1,19 +1,23 @@
 import express, { Request, Response } from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
+import { config } from './config/env.js';
+import { corsMiddleware } from './config/cors.js';
+import { requestIdMiddleware } from './middleware/requestId.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import claimRoutes from './api/claimRoutes.js';
+import { auditController } from './api/auditController.js';
+import { requireAuth, requireRole } from './middleware/auth.js';
+import { NotFoundError } from './utils/errors.js';
+import { logger } from './utils/logger.js';
 
-dotenv.config();
+export const app = express();
 
-const app = express();
-const PORT = process.env.PORT || 5000;
+// Global middleware
+app.use(requestIdMiddleware);
+app.use(corsMiddleware);
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true,
-}));
-app.use(express.json());
-
-// Health & Status endpoint
+// Health & Status endpoints
 app.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({
     status: 'ok',
@@ -32,10 +36,36 @@ app.get('/api/status', (_req: Request, res: Response) => {
       'agent-orchestration',
       'rag-engine',
       'document-processing',
+      'human-review',
+      'evidence-graph',
+      'settlement-engine',
+      'smtp-notifications',
     ],
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
+// Claims API routes
+app.use(`${config.API_PREFIX}/claims`, claimRoutes);
+
+// Admin-only global audit logs
+app.get(
+  `${config.API_PREFIX}/audit-logs`,
+  requireAuth,
+  requireRole('ADMIN'),
+  auditController.getAllAuditLogs
+);
+
+// 404 handler
+app.use((req: Request, _res: Response, next) => {
+  next(new NotFoundError(`Cannot ${req.method} ${req.path}`));
 });
+
+// Centralized error handler
+app.use(errorHandler);
+
+// Start server when run directly (not during vitest test imports)
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(config.PORT, () => {
+    logger.info(`Backend server running on http://localhost:${config.PORT} [${config.NODE_ENV}]`);
+  });
+}
